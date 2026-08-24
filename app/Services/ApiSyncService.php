@@ -45,7 +45,7 @@ class ApiSyncService
             if ($this->apiCallbackUrl) {
                 $data['webhook'] = $this->apiCallbackUrl;
             }
-            $response = Http::post("{$this->apiUrl}/categories", $data);
+            $response = Http::post("{$this->apiUrl}/import/categories", $data);
 
             return [
                 'status' => true,
@@ -93,7 +93,7 @@ class ApiSyncService
                 $data['webhook'] = $this->apiCallbackUrl;
             }
 
-            $response = Http::post("{$this->apiUrl}/locations", $data);
+            $response = Http::post("{$this->apiUrl}/import/locations", $data);
 
             return [
                 'status' => true,
@@ -132,7 +132,7 @@ class ApiSyncService
         }
 
         try {
-            $response = Http::post("{$this->apiUrl}/products", [
+            $response = Http::put("{$this->apiUrl}/import/products", [
                 'shop_id' => $this->apiKey,
                 'shop_secret' => $this->apiSecret,
                 'products' => $products
