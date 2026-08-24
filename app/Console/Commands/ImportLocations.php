@@ -47,23 +47,25 @@ class ImportLocations extends Command
 
     protected function processBatch(array $locations): void
     {
-        $service = new ApiSyncService();
-        $result = $service->importLocations($locations);
+        if (!empty($locations)) {
+            $service = new ApiSyncService();
+            $result = $service->importLocations($locations);
 
-        if ($result['status']) {
-            $now = now();
-            foreach ($locations as $location) {
-                $affected = DB::table('locations')
-                    ->where('id', $location->id)
-                    ->where('updated_at', $location->updated_at)
-                    ->update(['synced_at' => $now]);
+            if ($result['status']) {
+                $now = now();
+                foreach ($locations as $location) {
+                    $affected = DB::table('locations')
+                        ->where('id', $location->id)
+                        ->where('updated_at', $location->updated_at)
+                        ->update(['synced_at' => $now]);
 
-                if ($affected === 0) {
-                    $this->warn("Пропущена локация ID {$location->id}: локация была обновлена.");
+                    if ($affected === 0) {
+                        $this->warn("Пропущена локация ID {$location->id}: локация была обновлена.");
+                    }
                 }
+            } else {
+                $this->warn("Ошибка синхронизации локаций: {$result['message']}");
             }
-        } else {
-            $this->warn("Ошибка синхронизации локаций: {$result['message']}");
         }
     }
 }

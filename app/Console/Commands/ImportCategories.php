@@ -47,23 +47,25 @@ class ImportCategories extends Command
 
     protected function processBatch(array $categories): void
     {
-        $service = new ApiSyncService();
-        $result = $service->importCategories($categories);
+        if (!empty($categories)) {
+            $service = new ApiSyncService();
+            $result = $service->importCategories($categories);
 
-        if ($result['status']) {
-            $now = now();
-            foreach ($categories as $category) {
-                $affected = DB::table('categories')
-                    ->where('id', $category->id)
-                    ->where('updated_at', $category->updated_at)
-                    ->update(['synced_at' => $now]);
+            if ($result['status']) {
+                $now = now();
+                foreach ($categories as $category) {
+                    $affected = DB::table('categories')
+                        ->where('id', $category->id)
+                        ->where('updated_at', $category->updated_at)
+                        ->update(['synced_at' => $now]);
 
-                if ($affected === 0) {
-                    $this->warn("Пропущена категория ID {$category->id}: категория была обновлена.");
+                    if ($affected === 0) {
+                        $this->warn("Пропущена категория ID {$category->id}: категория была обновлена.");
+                    }
                 }
+            } else {
+                $this->warn("Ошибка синхронизации категорий: {$result['message']}");
             }
-        } else {
-            $this->warn("Ошибка синхронизации категорий: {$result['message']}");
         }
     }
 }

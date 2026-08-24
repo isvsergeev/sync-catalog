@@ -36,23 +36,25 @@ class ImportProducts extends Command
 
     protected function processBatch(array $products): void
     {
-        $service = new ApiSyncService();
-        $result = $service->importProducts($products);
+        if (!empty($products)) {
+            $service = new ApiSyncService();
+            $result = $service->importProducts($products);
 
-        if ($result['status']) {
-            $now = now();
-            foreach ($products as $product) {
-                $affected = DB::table('locations')
-                    ->where('id', $product->id)
-                    ->where('updated_at', $product->updated_at)
-                    ->update(['synced_at' => $now]);
+            if ($result['status']) {
+                $now = now();
+                foreach ($products as $product) {
+                    $affected = DB::table('locations')
+                        ->where('id', $product->id)
+                        ->where('updated_at', $product->updated_at)
+                        ->update(['synced_at' => $now]);
 
-                if ($affected === 0) {
-                    $this->warn("Пропущен офер ID {$product->id}: офер был обновлен.");
+                    if ($affected === 0) {
+                        $this->warn("Пропущен офер ID {$product->id}: офер был обновлен.");
+                    }
                 }
+            } else {
+                $this->warn("Ошибка синхронизации оферов: {$result['message']}");
             }
-        } else {
-            $this->warn("Ошибка синхронизации оферов: {$result['message']}");
         }
     }
 }
