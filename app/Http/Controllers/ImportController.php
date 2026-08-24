@@ -8,16 +8,16 @@ class ImportController extends Controller
 {
     public function importCategories(): void
     {
-        Artisan::call('import:categories');
+        Artisan::call('app:import-categories');
     }
 
     public function importLocations(): void
     {
-        Artisan::call('import:locations');
+        Artisan::call('app:import-locations');
     }
 
     public function importProducts(): void
     {
-        Artisan::call('import:products');
+        Artisan::call('app:import-products');
     }
 }
