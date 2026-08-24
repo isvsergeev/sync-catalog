@@ -43,12 +43,12 @@ class ImportProducts extends Command
             $now = now();
             foreach ($products as $product) {
                 $affected = DB::table('locations')
-                    ->where('id', $product['id'])
-                    ->where('updated_at', $product['updated_at'])
+                    ->where('id', $product->id)
+                    ->where('updated_at', $product->updated_at)
                     ->update(['synced_at' => $now]);
 
                 if ($affected === 0) {
-                    $this->warn("Пропущен офер ID {$product['id']}: офер был обновлен.");
+                    $this->warn("Пропущен офер ID {$product->id}: офер был обновлен.");
                 }
             }
         } else {

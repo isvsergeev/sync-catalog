@@ -54,12 +54,12 @@ class ImportCategories extends Command
             $now = now();
             foreach ($categories as $category) {
                 $affected = DB::table('categories')
-                    ->where('id', $category['id'])
-                    ->where('updated_at', $category['updated_at'])
+                    ->where('id', $category->id)
+                    ->where('updated_at', $category->updated_at)
                     ->update(['synced_at' => $now]);
 
                 if ($affected === 0) {
-                    $this->warn("Пропущена категория ID {$category['id']}: категория была обновлена.");
+                    $this->warn("Пропущена категория ID {$category->id}: категория была обновлена.");
                 }
             }
         } else {

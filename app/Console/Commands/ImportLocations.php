@@ -54,12 +54,12 @@ class ImportLocations extends Command
             $now = now();
             foreach ($locations as $location) {
                 $affected = DB::table('locations')
-                    ->where('id', $location['id'])
-                    ->where('updated_at', $location['updated_at'])
+                    ->where('id', $location->id)
+                    ->where('updated_at', $location->updated_at)
                     ->update(['synced_at' => $now]);
 
                 if ($affected === 0) {
-                    $this->warn("Пропущена локация ID {$location['id']}: локация была обновлена.");
+                    $this->warn("Пропущена локация ID {$location->id}: локация была обновлена.");
                 }
             }
         } else {
