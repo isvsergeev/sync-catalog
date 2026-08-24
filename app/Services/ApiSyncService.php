@@ -43,7 +43,7 @@ class ApiSyncService
                 'categories' => $categories,
             ];
             if ($this->apiCallbackUrl) {
-                $data['webhook'] = $this->apiCallbackUrl;
+                $data['webhook'] = $this->apiCallbackUrl . '/api/locations';
             }
             $response = Http::post("{$this->apiUrl}/import/categories", $data);
 
@@ -90,7 +90,7 @@ class ApiSyncService
                 'locations' => $locations,
             ];
             if ($this->apiCallbackUrl) {
-                $data['webhook'] = $this->apiCallbackUrl;
+                $data['webhook'] = $this->apiCallbackUrl . '/api/products';
             }
 
             $response = Http::post("{$this->apiUrl}/import/locations", $data);
