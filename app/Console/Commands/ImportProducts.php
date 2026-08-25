@@ -7,6 +7,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 #[Signature('app:import-products')]
 #[Description('Command description')]
@@ -76,8 +77,20 @@ class ImportProducts extends Command
     {
         if (!empty($products)) {
             $products_data = array_column($products, 'json');
+            $decoded = array_map(function($json) {
+                $json = preg_replace('/,\s*]/', ']', $json);
+                $json = preg_replace('/,\s*}/', '}', $json);
+
+                $result = json_decode($json, true);
+
+                if ($result === null) {
+                    Log::error('JSON decode error: ' . json_last_error_msg());
+                }
+
+                return $result;
+            }, $products_data);
             $service = new ApiSyncService();
-            $result = $service->importProducts($products_data);
+            $result = $service->importProducts($decoded);
 
             if ($result['status']) {
                 $now = now();
