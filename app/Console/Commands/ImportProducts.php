@@ -49,15 +49,16 @@ class ImportProducts extends Command
         $this->info('Импорт оферов завершён.');
     }
 
-    protected function processDeleteBatch(array $product_ids): void
+    protected function processDeleteBatch(array $products): void
     {
-        if (!empty($product_ids)) {
+        if (!empty($products)) {
+            $product_ids = array_column($products, 'id');
             $service = new ApiSyncService();
             $result = $service->deleteProducts($product_ids);
 
             if ($result['status']) {
                 $now = now();
-                foreach ($product_ids as $product) {
+                foreach ($products as $product) {
                     $affected = DB::table('products')
                         ->where('id', $product->id)
                         ->where('updated_at', $product->updated_at)
