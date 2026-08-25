@@ -25,8 +25,7 @@ class ApiSyncService
      * Импорт категорий
      *
      * @param array $categories
-     * @return void
-     * https://rees46.ru/help/integration/catalog/import/api/categories.html
+     * @return array <a href="https://rees46.ru/help/integration/catalog/import/api/categories.html">https://rees46.ru/help/integration/catalog/import/api/categories.html</a>
      */
     public function importCategories(array $categories): array
     {
@@ -71,8 +70,7 @@ class ApiSyncService
      * Импорт локаций
      *
      * @param array $locations
-     * @return void
-     * https://rees46.ru/help/integration/catalog/import/api/locations.html
+     * @return array <a href="https://rees46.ru/help/integration/catalog/import/api/locations.html">https://rees46.ru/help/integration/catalog/import/api/locations.html</a>
      */
     public function importLocations(array $locations): array
     {
@@ -119,8 +117,7 @@ class ApiSyncService
      * Импорт оферов
      *
      * @param array $products
-     * @return void
-     * https://rees46.ru/help/integration/catalog/import/api/products.html
+     * @return array <a href="https://rees46.ru/help/integration/catalog/import/api/products.html">https://rees46.ru/help/integration/catalog/import/api/products.html</a>
      */
     public function importProducts(array $products): array
     {
@@ -135,7 +132,50 @@ class ApiSyncService
             $response = Http::put("{$this->apiUrl}/import/products", [
                 'shop_id' => $this->apiKey,
                 'shop_secret' => $this->apiSecret,
-                'products' => $products
+                'items' => $products
+            ]);
+            usleep(100000);
+
+            return [
+                'status' => true,
+                'code' => $response->getStatusCode(),
+                'message' => $response->body()
+            ];
+        } catch ( Exception $e )
+        {
+            Log::error('Import products error: ', [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+
+            return [
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Отключение оферов "Не в наличии"
+     *
+     * @param array $products_ids
+     * @return array
+     */
+    public function deleteProducts(array $products_ids): array
+    {
+        if (!$this->checkCredentials()) {
+            return [
+                'status' => false,
+                'message' => 'Укажите параметры apiKey и apiSecret'
+            ];
+        }
+
+        try {
+            $response = Http::delete("{$this->apiUrl}/import/products", [
+                'shop_id' => $this->apiKey,
+                'shop_secret' => $this->apiSecret,
+                'items' => $products_ids
             ]);
             usleep(100000);
 
