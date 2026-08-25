@@ -75,8 +75,9 @@ class ImportProducts extends Command
     protected function processBatch(array $products): void
     {
         if (!empty($products)) {
+            $products_data = array_column($products, 'json');
             $service = new ApiSyncService();
-            $result = $service->importProducts($products);
+            $result = $service->importProducts($products_data);
 
             if ($result['status']) {
                 $now = now();
