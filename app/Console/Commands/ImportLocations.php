@@ -26,21 +26,16 @@ class ImportLocations extends Command
                     ->orWhereColumn('synced_at', '<', 'updated_at');
             })->exists();
 
-        DB::table('locations')
-            ->where('active', 1)
-            ->where(function ($query) {
-                $query->whereNull('synced_at')
-                    ->orWhereColumn('synced_at', '<', 'updated_at');
-            })
-            ->orderBy('id')
-            ->select('id', 'parent', 'name', 'type', 'group', 'updated_at')
-            ->chunk(500, function ($locations) {
-                $this->processBatch($locations->toArray());
-            });
-
-        $this->info('Импорт категорий завершён.');
-
-        if (!$unsynced_locations) {
+        if ($unsynced_locations) {
+            DB::table('locations')
+                ->where('active', 1)
+                ->orderBy('id')
+                ->select('id', 'parent', 'name', 'type', 'group', 'updated_at')
+                ->chunk(500, function ($locations) {
+                    $this->processBatch($locations->toArray());
+                });
+        } else {
+            $this->info('Импорт категорий завершён.');
             $this->call('app:import-products');
         }
     }

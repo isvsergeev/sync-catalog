@@ -26,21 +26,16 @@ class ImportCategories extends Command
                     ->orWhereColumn('synced_at', '<', 'updated_at');
             })->exists();
 
-        DB::table('categories')
-            ->where('active', 1)
-            ->where(function ($query) {
-                $query->whereNull('synced_at')
-                    ->orWhereColumn('synced_at', '<', 'updated_at');
-            })
-            ->orderBy('id')
-            ->select('id', 'parent', 'name', 'url', 'alias', 'updated_at')
-            ->chunkById(500, function ($categories) {
-                $this->processBatch($categories->toArray());
-            }, 'id');
-
-        $this->info('Импорт категорий завершён.');
-
-        if (!$unsynced_categories) {
+        if ($unsynced_categories) {
+            DB::table('categories')
+                ->where('active', 1)
+                ->orderBy('id')
+                ->select('id', 'parent', 'name', 'url', 'alias', 'updated_at')
+                ->chunkById(500, function ($categories) {
+                    $this->processBatch($categories->toArray());
+                }, 'id');
+        } else {
+            $this->info('Импорт категорий завершён.');
             $this->call('app:import-locations');
         }
     }
