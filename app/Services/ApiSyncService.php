@@ -45,12 +45,25 @@ class ApiSyncService
                 $data['webhook'] = $this->apiCallbackUrl . '/api/locations';
             }
             $response = Http::post("{$this->apiUrl}/import/categories", $data);
+            sleep(1);
 
-            return [
-                'status' => true,
-                'code' => $response->getStatusCode(),
-                'message' => $response->body()
-            ];
+            if ($response->successful()) {
+                return [
+                    'status' => true,
+                    'code' => $response->getStatusCode(),
+                    'message' => $response->body()
+                ];
+            } else {
+                Log::error('Import categories error: ', [
+                    'status' => $response->getStatusCode(),
+                    'message' => $response->json(),
+                ]);
+
+                return [
+                    'status' => false,
+                    'code' => $response->getStatusCode()
+                ];
+            }
         } catch ( Exception $e )
         {
             Log::error('Import categories error: ', [
@@ -92,12 +105,25 @@ class ApiSyncService
             }
 
             $response = Http::post("{$this->apiUrl}/import/locations", $data);
+            sleep(1);
 
-            return [
-                'status' => true,
-                'code' => $response->getStatusCode(),
-                'message' => $response->body()
-            ];
+            if ($response->successful()) {
+                return [
+                    'status' => true,
+                    'code' => $response->getStatusCode(),
+                    'message' => $response->body()
+                ];
+            } else {
+                Log::error('Import locations error: ', [
+                    'status' => $response->getStatusCode(),
+                    'message' => $response->json(),
+                ]);
+
+                return [
+                    'status' => false,
+                    'code' => $response->getStatusCode()
+                ];
+            }
         } catch ( Exception $e )
         {
             Log::error('Import locations error: ', [
@@ -134,13 +160,25 @@ class ApiSyncService
                 'shop_secret' => $this->apiSecret,
                 'items' => $products
             ]);
-            usleep(100000);
+            sleep(1);
 
-            return [
-                'status' => true,
-                'code' => $response->getStatusCode(),
-                'message' => $response->body()
-            ];
+            if ($response->successful()) {
+                return [
+                    'status' => true,
+                    'code' => $response->getStatusCode(),
+                    'message' => $response->body()
+                ];
+            } else {
+                Log::error('Import products error: ', [
+                    'status' => $response->getStatusCode(),
+                    'message' => $response->json(),
+                ]);
+                return [
+                    'status' => true,
+                    'code' => $response->getStatusCode()
+                ];
+            }
+
         } catch ( Exception $e )
         {
             Log::error('Import products error: ', [
@@ -177,13 +215,26 @@ class ApiSyncService
                 'shop_secret' => $this->apiSecret,
                 'items' => $products_ids
             ]);
-            usleep(100000);
+            sleep(1);
 
-            return [
-                'status' => true,
-                'code' => $response->getStatusCode(),
-                'message' => $response->body()
-            ];
+            if ($response->successful()) {
+                return [
+                    'status' => true,
+                    'code' => $response->getStatusCode(),
+                    'message' => $response->body()
+                ];
+            } else {
+                Log::error('Delete products error: ', [
+                    'status' => $response->getStatusCode(),
+                    'message' => $response->json(),
+                ]);
+
+                return [
+                    'status' => false,
+                    'code' => $response->getStatusCode(),
+                ];
+            }
+
         } catch ( Exception $e )
         {
             Log::error('Import products error: ', [
